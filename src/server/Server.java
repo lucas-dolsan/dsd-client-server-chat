@@ -27,6 +27,7 @@ public class Server {
             ClientConnection connection = new ClientConnection(clientSocket);
 
             clients.add(connection);
+
             executor.execute(connection);
         }
     }

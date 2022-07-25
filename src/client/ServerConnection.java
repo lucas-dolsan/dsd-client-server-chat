@@ -1,19 +1,19 @@
 package client;
 
+import common.Message;
 import common.SocketReader;
 import common.SocketWriter;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.Socket;
 
 public class ServerConnection extends Thread {
     private Socket serverSocket;
     private SocketReader reader;
     private SocketWriter writer;
-    private DisplayOutput displayOutput;
+    private ChatDisplayOutput displayOutput;
 
-    public ServerConnection(Socket serverSocket, DisplayOutput displayOutput) {
+    public ServerConnection(Socket serverSocket, ChatDisplayOutput displayOutput) {
         if(displayOutput == null) {
             throw new RuntimeException("Error: DisplayOutput not properly configured");
         }
@@ -21,23 +21,35 @@ public class ServerConnection extends Thread {
         this.serverSocket = serverSocket;
 
         this.reader = new SocketReader(this.serverSocket);
-        this.writer = new SocketWriter(this.serverSocket);
+        this.writer = new SocketWriter(this.serverSocket, false);
+
+        this.displayOutput.setServerConnection(this);
+        this.displayOutput.setVisible(true);
     }
 
-    public void sendMessage(String message) {
-        writer.write(message);
+    public void sendMessage(Message message) {
+        System.out.println("sendMessage: " + message.getBody());
+
+        writer.write(message.toJson().toString());
+    }
+
+    private void log(Message message) {
+        System.out.println(" got: " + message.getBody());
     }
 
     @Override
     public void run() {
-        String message;
+        String rawMessage;
         while (true) {
-            message = this.reader.read();
-
-            if(!SocketReader.isMessageValid(message)) {
+            rawMessage = this.reader.read();
+            System.out.println("raw: " + rawMessage);
+            if(!SocketReader.isMessageValid(rawMessage)) {
                 break;
             }
-            this.displayOutput.print(new JSONObject(message).toString());
+
+            Message message = Message.fromJson(new JSONObject(rawMessage));
+            this.log(message);
+            this.displayOutput.print(message.getBody());
         }
         this.reader.close();
     }

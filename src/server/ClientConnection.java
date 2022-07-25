@@ -1,7 +1,9 @@
 package server;
 
+import common.Message;
 import common.SocketReader;
 import common.SocketWriter;
+import org.json.JSONObject;
 
 import java.net.Socket;
 
@@ -14,7 +16,7 @@ public class ClientConnection extends Server implements Runnable {
     public ClientConnection(Socket clientConnection) {
         this.socket = clientConnection;
         this.reader = new SocketReader(this.socket);
-        this.writer = new SocketWriter(this.socket);
+        this.writer = new SocketWriter(this.socket, true);
     }
 
     public Socket getSocket() {
@@ -24,16 +26,23 @@ public class ClientConnection extends Server implements Runnable {
         return writer;
     }
 
+    private void log(Message message) {
+        System.out.println(this.socket.getLocalAddress() + " sent: " + message.getBody());
+    }
+
     @Override
     public void run() {
-        String message;
+        String rawMessage;
         while (true) {
-            message = this.reader.read();
+            rawMessage = this.reader.read();
 
-            if (!SocketReader.isMessageValid(message)) {
+            if (!SocketReader.isMessageValid(rawMessage)) {
                 break;
             }
 
+            Message message = Message.fromJson(new JSONObject(rawMessage));
+
+            this.log(message);
             this.writer.broadcastMessage(message);
         }
         this.reader.close();
