@@ -1,18 +1,33 @@
 @startuml
 
-  clientA -> Server: message(body)
-  note right
-    client A sends message to server
-  end note
+  clientA -> Server: message(username, body, handshake=true)
 
-  clientA <- Server: message(body)
-  note right
-    Server broadcasts to client A
-  end note
+  clientA <- Server: message(username="Server", body="novo usuário conectado")
 
-  clientB <- Server: message(body)
-  note right
-    Server broadcasts to client B
-  end note
+  clientB <- Server: message(username="Server", body="novo usuário conectado")
+
+
+
+  clientB -> Server: message(username, body, handshake=true)
+
+  clientB <- Server: message(username="Server", body="novo usuário conectado")
+
+  clientA <- Server: message(username="Server", body="novo usuário conectado")
+
+
+
+  clientA -> Server: message(username, body="Oi tudo bem?")
+
+  clientA <- Server: message(username, body="Oi tudo bem?")
+
+  clientB <- Server: message(username, body="Oi tudo bem?")
+
+
+
+  clientB -> Server: message(username, body="tudo bem")
+
+  clientB <- Server: message(username, body="tudo bem")
+
+  clientA <- Server: message(username, body="Oi tudo bem?")
 
 @enduml
