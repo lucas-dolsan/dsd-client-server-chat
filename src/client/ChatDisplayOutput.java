@@ -1,18 +1,23 @@
 package client;
 
 import common.Message;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.Socket;
 
 public class ChatDisplayOutput extends JFrame {
     private JTextArea messagesArea;
     private JTextField messageField;
     private JButton sendButton;
     private JPanel container;
+
+    private JTextField usernameField;
+    private JTextField hostField;
+    private JTextField portField;
+
+    private JButton startButton;
+
     private ServerConnection serverConnection;
 
     public void print(String message) {
@@ -24,6 +29,11 @@ public class ChatDisplayOutput extends JFrame {
     public void setupComponents() {
         this.container = this.setupContainer();
         this.add(container);
+
+        this.container.add(this.setupUsernameField());
+        this.container.add(this.setupHostField());
+        this.container.add(this.setupPortField());
+        this.container.add(this.setupStartButton());
 
         this.container.add(this.setupMessageArea());
         this.container.add(this.setupMessageField());
@@ -43,6 +53,8 @@ public class ChatDisplayOutput extends JFrame {
 
     private JButton setupSendButton() {
         JButton sendButton = new JButton("Enviar");
+        sendButton.setVisible(false);
+        this.sendButton = sendButton;
 
         sendButton.addActionListener(e -> {
             String rawMessage = this.messageField.getText();
@@ -56,10 +68,57 @@ public class ChatDisplayOutput extends JFrame {
         return sendButton;
     }
 
+    private JButton setupStartButton() {
+        JButton startButton = new JButton("Conectar");
+
+        startButton.addActionListener(e -> this.connect());
+        this.startButton = startButton;
+
+        return startButton;
+    }
+
+    private JTextField setupUsernameField() {
+        JTextField usernameField = new JTextField();
+
+        usernameField.setEditable(true);
+        usernameField.setPreferredSize(new Dimension(640, 50));
+        usernameField.setText("username");
+
+        this.usernameField = usernameField;
+
+        return usernameField;
+    }
+
+    private JTextField setupPortField() {
+        JTextField portField = new JTextField();
+
+        portField.setEditable(true);
+        portField.setPreferredSize(new Dimension(640, 50));
+        portField.setText("8000");
+
+        this.portField = portField;
+
+        return portField;
+    }
+
+    private JTextField setupHostField() {
+        JTextField hostField = new JTextField();
+
+        hostField.setEditable(true);
+        hostField.setPreferredSize(new Dimension(640, 50));
+        hostField.setText("127.0.0.1");
+
+        this.hostField = hostField;
+
+        return hostField;
+    }
+
+
     private JTextField setupMessageField() {
         JTextField messageField = new JTextField();
         messageField.setEditable(true);
         messageField.setPreferredSize(new Dimension(640, 50));
+        messageField.setVisible(false);
 
         this.messageField = messageField;
 
@@ -70,6 +129,7 @@ public class ChatDisplayOutput extends JFrame {
         JTextArea messagesArea = new JTextArea();
         messagesArea.setEditable(false);
         messagesArea.setPreferredSize(new Dimension(640, 400));
+        messagesArea.setVisible(false);
 
         this.messagesArea = messagesArea;
 
@@ -82,7 +142,27 @@ public class ChatDisplayOutput extends JFrame {
         this.setResizable(false);
 
         this.setupComponents();
+        this.setVisible(true);
+    }
 
+    public void connect() {
+        Socket serverSocket = null;
+        try {
+            serverSocket = new Socket(this.hostField.getText(), Integer.parseInt(this.portField.getText()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        this.startButton.setVisible(false);
+        this.portField.setVisible(false);
+        this.hostField.setVisible(false);
+        this.usernameField.setVisible(false);
+
+        this.messageField.setVisible(true);
+        this.messagesArea.setVisible(true);
+        this.sendButton.setVisible(true);
+
+        new ServerConnection(serverSocket, this).start();
     }
 
     public void setServerConnection(ServerConnection serverConnection) {

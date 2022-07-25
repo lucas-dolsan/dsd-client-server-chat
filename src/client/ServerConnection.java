@@ -24,7 +24,6 @@ public class ServerConnection extends Thread {
         this.writer = new SocketWriter(this.serverSocket, false);
 
         this.displayOutput.setServerConnection(this);
-        this.displayOutput.setVisible(true);
     }
 
     public void sendMessage(Message message) {
