@@ -1,0 +1,18 @@
+@startuml
+
+  clientA -> Server: message(body)
+  note right
+    client A sends message to server
+  end note
+
+  clientA <- Server: message(body)
+  note right
+    Server broadcasts to client A
+  end note
+
+  clientB <- Server: message(body)
+  note right
+    Server broadcasts to client B
+  end note
+
+@enduml
