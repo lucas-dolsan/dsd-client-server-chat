@@ -23,11 +23,20 @@ public class ServerConnection extends Thread {
         this.reader = new SocketReader(this.serverSocket);
         this.writer = new SocketWriter(this.serverSocket, false);
 
+        this.connect();
+
         this.displayOutput.setServerConnection(this);
     }
 
     public void sendMessage(Message message) {
         System.out.println("sendMessage: " + message.getBody());
+
+        writer.write(message.toJson().toString());
+    }
+
+    public void connect() {
+        Message message = new Message(displayOutput.getUsername(), "", true);
+        System.out.println("handshake: " + message.getUsername());
 
         writer.write(message.toJson().toString());
     }
@@ -48,7 +57,7 @@ public class ServerConnection extends Thread {
 
             Message message = Message.fromJson(new JSONObject(rawMessage));
             this.log(message);
-            this.displayOutput.print(message.getBody());
+            this.displayOutput.print(message);
         }
         this.reader.close();
     }

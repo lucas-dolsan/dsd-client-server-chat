@@ -11,18 +11,16 @@ public class ChatDisplayOutput extends JFrame {
     private JTextField messageField;
     private JButton sendButton;
     private JPanel container;
-
     private JTextField usernameField;
     private JTextField hostField;
     private JTextField portField;
-
     private JButton startButton;
-
     private ServerConnection serverConnection;
 
-    public void print(String message) {
+    public void print(Message message) {
         String currentText = this.messagesArea.getText();
-        currentText += "\n" + message;
+        currentText += "\n" + message.getUsername() + ": " + message.getBody();
+
         this.messagesArea.setText(currentText);
     }
 
@@ -38,7 +36,6 @@ public class ChatDisplayOutput extends JFrame {
         this.container.add(this.setupMessageArea());
         this.container.add(this.setupMessageField());
         this.container.add(this.setupSendButton());
-
     }
 
     private JPanel setupContainer() {
@@ -51,6 +48,10 @@ public class ChatDisplayOutput extends JFrame {
         return container;
     }
 
+    public String getUsername() {
+        return usernameField.getText();
+    }
+
     private JButton setupSendButton() {
         JButton sendButton = new JButton("Enviar");
         sendButton.setVisible(false);
@@ -61,7 +62,8 @@ public class ChatDisplayOutput extends JFrame {
             if (rawMessage == "") {
                 return;
             }
-            this.serverConnection.sendMessage(new Message(rawMessage));
+            Message message = new Message(this.usernameField.getText(), rawMessage);
+            this.serverConnection.sendMessage(message);
             this.messageField.setText("");
         });
 
@@ -161,6 +163,8 @@ public class ChatDisplayOutput extends JFrame {
         this.messageField.setVisible(true);
         this.messagesArea.setVisible(true);
         this.sendButton.setVisible(true);
+
+        this.setTitle(getUsername());
 
         new ServerConnection(serverSocket, this).start();
     }

@@ -13,6 +13,8 @@ public class ClientConnection extends Server implements Runnable {
     private SocketReader reader;
     private SocketWriter writer;
 
+    private String username;
+
     public ClientConnection(Socket clientConnection) {
         this.socket = clientConnection;
         this.reader = new SocketReader(this.socket);
@@ -30,6 +32,14 @@ public class ClientConnection extends Server implements Runnable {
         System.out.println(this.socket.getLocalAddress() + " sent: " + message.getBody());
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
     @Override
     public void run() {
         String rawMessage;
@@ -41,9 +51,15 @@ public class ClientConnection extends Server implements Runnable {
             }
 
             Message message = Message.fromJson(new JSONObject(rawMessage));
-
             this.log(message);
-            this.writer.broadcastMessage(message);
+
+            if(!message.getHandshake()) {
+                this.writer.broadcastMessage(message);
+            } else {
+                String newUserConnectedMessage = message.getUsername() + " conectou";
+                this.writer.broadcastMessage(new Message("Server", newUserConnectedMessage));
+            }
+
         }
         this.reader.close();
     }
