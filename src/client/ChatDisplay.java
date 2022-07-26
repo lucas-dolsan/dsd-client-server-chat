@@ -6,7 +6,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
 
-public class ChatDisplayOutput extends JFrame {
+public class ChatDisplay extends JFrame {
     private JTextArea messagesArea;
     private JTextField messageField;
     private JButton sendButton;
@@ -73,7 +73,7 @@ public class ChatDisplayOutput extends JFrame {
     private JButton setupStartButton() {
         JButton startButton = new JButton("Conectar");
 
-        startButton.addActionListener(e -> this.connect());
+        startButton.addActionListener(e -> this.onConnectButtonClick());
         this.startButton = startButton;
 
         return startButton;
@@ -138,13 +138,27 @@ public class ChatDisplayOutput extends JFrame {
         return messagesArea;
     }
 
-    public ChatDisplayOutput() {
+    public ChatDisplay() {
         this.setLocationRelativeTo(null);
         this.setSize(650, 550);
         this.setResizable(false);
-
+        this.setTitle("Cliente");
         this.setupComponents();
+
         this.setVisible(true);
+    }
+
+    public void onConnectButtonClick() {
+        this.startButton.setVisible(false);
+        this.portField.setVisible(false);
+        this.hostField.setVisible(false);
+        this.usernameField.setVisible(false);
+
+        this.messageField.setVisible(true);
+        this.messagesArea.setVisible(true);
+        this.sendButton.setVisible(true);
+
+        this.connect();
     }
 
     public void connect() {
@@ -154,15 +168,6 @@ public class ChatDisplayOutput extends JFrame {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        this.startButton.setVisible(false);
-        this.portField.setVisible(false);
-        this.hostField.setVisible(false);
-        this.usernameField.setVisible(false);
-
-        this.messageField.setVisible(true);
-        this.messagesArea.setVisible(true);
-        this.sendButton.setVisible(true);
 
         this.setTitle(getUsername());
 

@@ -1,8 +1,8 @@
 package client;
 
-public class Client {
+public class StartClient {
 
     public static void main(String[] args) {
-        new ChatDisplayOutput();
+        new ChatDisplay();
     }
 }

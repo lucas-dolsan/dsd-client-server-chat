@@ -1,0 +1,55 @@
+	
+@startuml
+
+' --------------------------- client side
+
+class ChatDisplay {
+  messagesArea: JTextArea
+  messageField: JTextField
+  sendButton: JButton
+  container: JPanel
+  usernameField: JTextField
+  hostField: JTextField
+  portField: JTextField
+  startButton: JButton
+  serverConnection: ServerConnection
+  
+  void connect()
+}
+
+class ServerConnection {
+    private Socket serverSocket;
+    private SocketReader reader;
+    private SocketWriter writer;
+    private ChatDisplay chatDisplay;
+}
+
+class StartClient {
+  void main()
+}
+
+' --------------------------- server side
+
+class ServerDisplay {
+    container: JPanel
+    portField: JTextField
+    maxClientField: JTextField
+    startButton: JButton
+    clients: List<ClientConnection>
+
+    void start()
+}
+
+class ClientConnection {
+    serverDisplay: ServerDisplay
+    socket: Socket
+    reader: SocketReader
+    writer: SocketWriter
+    clients: List<ClientConnection>
+}
+
+class StartServer {
+  void main()
+}
+
+@enduml

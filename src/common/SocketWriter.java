@@ -1,11 +1,12 @@
 package common;
 
 import server.ClientConnection;
-import server.Server;
+import server.StartServer;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class SocketWriter {
     private PrintWriter printWriter;
@@ -36,8 +37,8 @@ public class SocketWriter {
 
     }
 
-    public void broadcastMessage(Message message) {
-        for (ClientConnection clientConnection : Server.getClients()) {
+    public void broadcastMessage(Message message, ArrayList<ClientConnection> clients) {
+        for (ClientConnection clientConnection : clients) {
 
             if(!this.shouldBroadcastToSameConnection) {
                 if (this.isSameConnection(clientConnection)) {

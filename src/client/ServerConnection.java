@@ -11,13 +11,13 @@ public class ServerConnection extends Thread {
     private Socket serverSocket;
     private SocketReader reader;
     private SocketWriter writer;
-    private ChatDisplayOutput displayOutput;
+    private ChatDisplay chatDisplay;
 
-    public ServerConnection(Socket serverSocket, ChatDisplayOutput displayOutput) {
-        if(displayOutput == null) {
+    public ServerConnection(Socket serverSocket, ChatDisplay chatDisplay) {
+        if(chatDisplay == null) {
             throw new RuntimeException("Error: DisplayOutput not properly configured");
         }
-        this.displayOutput = displayOutput;
+        this.chatDisplay = chatDisplay;
         this.serverSocket = serverSocket;
 
         this.reader = new SocketReader(this.serverSocket);
@@ -25,7 +25,7 @@ public class ServerConnection extends Thread {
 
         this.connect();
 
-        this.displayOutput.setServerConnection(this);
+        this.chatDisplay.setServerConnection(this);
     }
 
     public void sendMessage(Message message) {
@@ -35,7 +35,7 @@ public class ServerConnection extends Thread {
     }
 
     public void connect() {
-        Message message = new Message(displayOutput.getUsername(), "", true);
+        Message message = new Message(chatDisplay.getUsername(), "", true);
         System.out.println("handshake: " + message.getUsername());
 
         writer.write(message.toJson().toString());
@@ -57,7 +57,7 @@ public class ServerConnection extends Thread {
 
             Message message = Message.fromJson(new JSONObject(rawMessage));
             this.log(message);
-            this.displayOutput.print(message);
+            this.chatDisplay.print(message);
         }
         this.reader.close();
     }

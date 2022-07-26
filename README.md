@@ -6,5 +6,6 @@ cliente-servidor.
 
 -  Lucas Dolsan
 
+RF1: O sistema deverá ler informações de: nome de usuário, endereço e porta de conexão com o servidor;
 
-RF1: O sistema deverá possuir uma janela de chat para troca de mensagens.
+RF2: O sistema deverá possuir uma janela de chat para troca de mensagens.
